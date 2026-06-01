@@ -24,6 +24,7 @@ env/
 secrets/
 config/secrets.yaml
 config/api_keys.yaml
+config/settings.yaml
 
 # ============================================
 # IDEs
@@ -76,9 +77,11 @@ dist/
 
 samples/*.eml
 samples/*.msg
+samples/*
 
 # Keep folder structure
 !samples/.gitkeep
+!samples/README.md
 
 # ============================================
 # Attachments Extracted During Analysis
