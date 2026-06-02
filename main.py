@@ -1,11 +1,19 @@
 from parsers.eml_parser import parse_email
+from analyzers.header import analyze_headers
+from analyzers.scoring import build_result
 
 
-email = parse_email("samples/test.eml")
+def main():
+    email = parse_email("samples/test.eml")
 
-print(email)
-print("Subject:", email.subject)
-print("Sender:", email.sender)
-print("Reply-To:", email.reply_to)
-print("Recipients:", email.recipients)
-print("Body:", email.body_text)
+    findings = []
+
+    findings.extend(analyze_headers(email))
+
+    result = build_result(findings)
+
+    print(result)
+
+
+if __name__ == '__main__':
+    main()
