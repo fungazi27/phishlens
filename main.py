@@ -1,7 +1,7 @@
-from parsers.eml_parser import parse_eml
+from parsers.eml_parser import parse_email
 
 
-email = parse_eml("samples/test.eml")
+email = parse_email("samples/test.eml")
 
 print(email)
 print("Subject:", email.subject)

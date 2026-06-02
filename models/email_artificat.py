@@ -9,7 +9,7 @@ class AttachmentArtifact:
     sha256: Optional[str] = None
 
 @dataclass
-class EmailArtifact
+class EmailArtifact:
     source: str
     message_id: Optional[str]
     subject: Optional[str]
