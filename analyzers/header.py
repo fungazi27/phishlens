@@ -15,7 +15,7 @@ def analyze_headers(email):
                     severity="medium",
                     title="Reply-To differs from sender",
                     description=(
-                        f"From addressc '{sender}' "
+                        f"From address '{sender}' "
                         f"does not match Reply-To '{reply_to}' ."
                     ),
                     score=20,
