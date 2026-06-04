@@ -15,6 +15,7 @@ def save_json_report(email, result, output_path="reports/report.json"):
         "verdict": result.verdict,
         "score": result.total_score,
         "findings": [asdict(finding) for finding in result.findings],
+        "indicators": [asdict(indicator) for indicator in result.indicators]
     }
 
     with open(output_path, "w", encoding="utf-8") as f:
