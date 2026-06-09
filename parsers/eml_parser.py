@@ -2,6 +2,7 @@ from email import policy
 from email.parser import BytesParser
 from email.utils import getaddresses
 from pathlib import Path
+import hashlib
 
 from models.email_artificat import EmailArtifact, AttachmentArtifact
 
@@ -29,11 +30,14 @@ def parse_email(file_path: str) -> EmailArtifact:
                 filename = part.get_filename()
                 payload = part.get_payload(decode=True) or b""
 
+                sha256_hash = hashlib.sha256(payload).hexdigest()
+
                 attachments.append(
                     AttachmentArtifact(
                         filename=filename or "unknown",
                         content_type=content_type,
                         size=len(payload),
+                        sha256=sha256_hash
                     )
                 )
             elif content_type == "text/plain" and body_text == "":
