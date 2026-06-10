@@ -7,7 +7,7 @@ from analyzers.authentication import analyze_authentication
 from output.json_report import save_json_report
 from analyzers.url import analyze_urls
 from analyzers.attachments import analyze_attachments
-from analyzers.attachments import Indicator
+from analyzers.html_links import analyze_html_links
 
 
 def main():
@@ -46,14 +46,19 @@ def main():
     findings.extend(analyze_authentication(email))
     
     attachment_findings, attachment_indicators = analyze_attachments(email)
-
     indicators.extend(attachment_indicators)
     findings.extend(attachment_findings)
 
     url_findings, url_indicators = analyze_urls(email)
-    
     findings.extend(url_findings)
     indicators.extend(url_indicators)
+
+    html_findings, html_indicators = analyze_html_links(email)
+    findings.extend(html_findings)
+    indicators.extend(html_indicators)
+
+    print("\n=== HTML Body Debug ===")
+    print(email.body_html[:500] if email.body_html else "No HTML body found")
 
     result = build_result(findings, indicators)
 
