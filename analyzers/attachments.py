@@ -1,4 +1,5 @@
 from models.finding import Finding
+from models.indicator import Indicator
 
 
 DANGEROUS_EXTENSIONS = {
@@ -16,6 +17,18 @@ MACRO_OFFICE_EXTENSIONS = {
 
 def analyze_attachments(email):
     findings = []
+    indicators = []
+
+    for attachment in email.attachments:
+        if attachment.sha256:
+            indicators.append(
+                Indicator(
+                    type="hash",
+                    value=attachment.sha256,
+                    source="attachment",
+                    context=f"SHA256 hsh for attachment: {attachment.filename}",
+                )
+            )
 
     for attachment in email.attachments:
         filename = (attachment.filename or "").lower()
@@ -64,7 +77,7 @@ def analyze_attachments(email):
                 )
             )
 
-    return findings
+    return findings, indicators
 
 
 def has_dangerous_extension(filename):

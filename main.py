@@ -7,6 +7,7 @@ from analyzers.authentication import analyze_authentication
 from output.json_report import save_json_report
 from analyzers.url import analyze_urls
 from analyzers.attachments import analyze_attachments
+from analyzers.attachments import Indicator
 
 
 def main():
@@ -23,14 +24,31 @@ def main():
 
     email = parse_email(args.file)
     
-    #print(email.headers.get("Authentication-Results"))
+    # Debug
+    '''print("\n=== Parsed Attachments ===")
+    print(f"Attachment count: {len(email.attachments)}")
+
+    for attachment in email.attachments:
+        print(f"Filename: {attachment.filename}")
+        print(f"SHA256: {attachment.sha256}")
+        print()'''
 
     findings = []
     indicators = []
 
+    '''print("\n=== Indicators Collected ===")
+    print(f"Indicator Count: {len(indicators)}")
+
+    for indicator in indicators:
+        print(indicator)'''
+
     findings.extend(analyze_headers(email))
     findings.extend(analyze_authentication(email))
-    findings.extend(analyze_attachments(email))
+    
+    attachment_findings, attachment_indicators = analyze_attachments(email)
+
+    indicators.extend(attachment_indicators)
+    findings.extend(attachment_findings)
 
     url_findings, url_indicators = analyze_urls(email)
     
