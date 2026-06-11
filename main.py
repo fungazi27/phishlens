@@ -8,6 +8,8 @@ from output.json_report import save_json_report
 from analyzers.url import analyze_urls
 from analyzers.attachments import analyze_attachments
 from analyzers.html_links import analyze_html_links
+from extractors.url_extractor import extract_urls_from_email
+from extractors.html_link_extractor import extract_html_links
 
 
 def main():
@@ -36,33 +38,26 @@ def main():
     findings = []
     indicators = []
 
-    '''print("\n=== Indicators Collected ===")
-    print(f"Indicator Count: {len(indicators)}")
-
-    for indicator in indicators:
-        print(indicator)'''
-
     findings.extend(analyze_headers(email))
     findings.extend(analyze_authentication(email))
-    
-    attachment_findings, attachment_indicators = analyze_attachments(email)
-    indicators.extend(attachment_indicators)
-    findings.extend(attachment_findings)
 
-    url_findings, url_indicators = analyze_urls(email)
-    findings.extend(url_findings)
+    attachment_findings, attachment_indicators = analyze_attachments(email)
+    findings.extend(attachment_findings)
+    indicators.extend(attachment_indicators)
+
+    url_indicators = extract_urls_from_email(email)
     indicators.extend(url_indicators)
 
-    html_findings, html_indicators = analyze_html_links(email)
-    findings.extend(html_findings)
+    findings.extend(analyze_urls(indicators))
+
+    html_links, html_indicators = extract_html_links(email)
     indicators.extend(html_indicators)
 
-    print("\n=== HTML Body Debug ===")
-    print(email.body_html[:500] if email.body_html else "No HTML body found")
+    findings.extend(analyze_html_links(html_links))
 
     result = build_result(findings, indicators)
 
-    report_path = save_json_report(email, result)
+    report_path = save_json_report(email,result)
 
     print("\n=== Analysis Complete ===")
     print(f"Verdict: {result.verdict}")

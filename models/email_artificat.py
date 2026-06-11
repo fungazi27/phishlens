@@ -16,7 +16,7 @@ class EmailArtifact:
     sender: Optional[str]
     reply_to: Optional[str]
     recipients: List[str]
-    headers: Dict[str. str]
+    headers: Dict[str, str]
     body_text: str
     body_html: str
     attachments: list[AttachmentArtifact] = field(default_factory=List)

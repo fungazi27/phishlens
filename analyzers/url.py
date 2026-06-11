@@ -1,41 +1,21 @@
-import re
 import ipaddress
 from urllib.parse import urlparse
 
 from models.finding import Finding
-from models.indicator import Indicator
 
-URL_REGEX = r'https:?://[^\s<>"\']+'
 
-def analyze_urls(email):
+def analyze_urls(indicators):
     findings = []
-    indicators = []
 
-    urls = extract_urls(email.body_text) + extract_urls(email.body_html)
-    urls = sorted(set(urls))
+    urls = [
+        indicator.value
+        for indicator in indicators
+        if indicator.type == "url"
+    ]
 
     for url in urls:
         parsed = urlparse(url)
         host = parsed.hostname.lower() if parsed.hostname else None
-
-        indicators.append(
-            Indicator(
-                type="url",
-                value=url,
-                source="email_body",
-                context="Extracted from email body",
-            )
-        )
-
-        if host:
-            indicators.append(
-                Indicator(
-                    type="domain",
-                    value=host,
-                    source="email_body",
-                    context=f"Extracted from URL: {url}",
-                )
-            )
 
         if is_ip_address(host):
             findings.append(
@@ -68,31 +48,28 @@ def analyze_urls(email):
                     description=f"URL contains userinfo-style obfuscation: {url}",
                     score=25,
                 )
-            ) 
-    
-    return findings,indicators
+            )
 
-def extract_urls(text):
-    if not text:
-        return []
-    
-    return re.findall(URL_REGEX, text)
+    return findings
+
 
 def is_ip_address(value):
     if not value:
         return False
-    
+
     try:
         ipaddress.ip_address(value)
         return True
     except ValueError:
         return False
-    
+
+
 def is_punycode_domain(value):
     if not value:
         return False
-    
+
     return "xn--" in value
 
+
 def has_userinfo_abuse(parsed_url):
-    return "@" in parsed_url.netloc
+    return bool(parsed_url.username or parsed_url.password)
